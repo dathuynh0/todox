@@ -29,6 +29,7 @@ const TodoCard = ({ item }) => {
     }
   };
 
+  // xóa
   const deleteTodo = async () => {
     try {
       await axios.delete(`http://localhost:8080/api/todox/${item._id}`);
@@ -39,38 +40,65 @@ const TodoCard = ({ item }) => {
     }
   };
 
+  const toggleComplete = async () => {
+    try {
+      if (item.status === "active") {
+        await axios.put(`http://localhost:8080/api/todox/${item._id}`, {
+          status: "complete",
+        });
+        toast.success("Chinh sua thanh cong");
+      }
+    } catch (error) {
+      console.error("Chinh sua thất bại, ", error);
+      toast.error("Chinh sua thất bại");
+    }
+  };
+
   return (
-    <div className="w-full p-4 mb-2 bg-violet-300 rounded-2xl flex items-center justify-between">
-      <div>
-        {pen ? (
-          <Input
-            type="text"
-            placeholder="Nhập dữ liệu cần chỉnh sửa"
-            className="text-white"
-            value={updateTodoName}
-            onChange={(e) => setUpdateTodoName(e.target.value)}
-            onBlur={() => {
-              setPen(false);
-              setUpdateTodoName(item.name);
-            }}
-            onKeyPress={handleKeyPress}
-          />
-        ) : (
-          <h3
-            className={`text-xl text-white ${
+    <div className="w-full p-4 mb-2 bg-cyan-400 rounded-2xl flex items-center justify-between">
+      <div className="flex items-center justify-center gap-4">
+        <Button
+          onClick={() => {
+            toggleComplete();
+          }}
+          variant="ghost"
+          size="icon"
+          className={`border border-black rounded-full cursor-pointer ${
+            item.status === "complete" ? "bg-white" : ""
+          }`}
+        ></Button>
+
+        <div>
+          {pen ? (
+            <Input
+              type="text"
+              placeholder="Nhập dữ liệu cần chỉnh sửa"
+              className="text-white"
+              value={updateTodoName}
+              onChange={(e) => setUpdateTodoName(e.target.value)}
+              onBlur={() => {
+                setPen(false);
+                setUpdateTodoName(item.name);
+              }}
+              onKeyPress={handleKeyPress}
+            />
+          ) : (
+            <h3
+              className={`text-xl text-white ${
+                item.status === "complete" ? "line-through" : ""
+              }`}
+            >
+              {item.name}
+            </h3>
+          )}
+          <span
+            className={`text-sm text-white ${
               item.status === "complete" ? "line-through" : ""
             }`}
           >
-            {item.name}
-          </h3>
-        )}
-        <span
-          className={`text-sm text-white ${
-            item.status === "complete" ? "line-through" : ""
-          }`}
-        >
-          {item.status}
-        </span>
+            {item.status}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-4">
